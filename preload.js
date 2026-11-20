@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld('pet', {
   onState: (cb) => on('pet:state', cb),
   onBubble: (cb) => on('pet:bubble', cb),
   hover: (v) => ipcRenderer.send('pet:hover', v),
+  onCursor: (cb) => on('pet:cursor', cb),
   dragStart: () => ipcRenderer.send('pet:drag-start'),
   dragEnd: () => ipcRenderer.send('pet:drag-end'),
   contextMenu: () => ipcRenderer.send('pet:context-menu'),

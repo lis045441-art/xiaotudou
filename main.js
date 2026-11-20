@@ -704,8 +704,42 @@ ipcMain.on('pet:ready', () => {
 });
 
 ipcMain.on('pet:hover', (_, on) => {
-  if (!pet.dragging) petWin.setIgnoreMouseEvents(!on, { forward: true });
+  // Windows 走 pollCursor 主进程命中测试，不依赖渲染进程的 IPC 往返
+  if (isMac && !pet.dragging) petWin.setIgnoreMouseEvents(!on, { forward: true });
 });
+
+// Windows 上浏览器在前台时 forward 转发的 mousemove 会整段丢失（0.1.3 用户视频：动画在跑但指针移上去没反应），
+// 页面拿不到坐标就永远关不掉穿透；主进程自己问指针位置喂给页面，不依赖转发
+let cursorInPet = false;
+let cursorHit = false;
+function pollCursor() {
+  if (!petWin || petWin.isDestroyed() || !petWin.isVisible() || pet.dragging) return;
+  const c = screen.getCursorScreenPoint();
+  const b = petWin.getBounds();
+  const inside = c.x >= b.x && c.x < b.x + b.width && c.y >= b.y && c.y < b.y + b.height;
+
+  // 主进程直接做命中测试，省掉渲染进程 IPC 往返；
+  // 解决 Windows 上浏览器前台时 forward 转发丢失导致无法点击/拖拽的问题
+  let hit = false;
+  if (inside) {
+    const lx = c.x - b.x;
+    const ly = c.y - b.y;
+    const s = sprite?.size || 96;
+    const spriteLeft = (b.width - s) / 2;
+    const spriteTop = b.height - s;
+    const onSprite = lx >= spriteLeft && lx < spriteLeft + s && ly >= spriteTop;
+    const onBubble = !!currentBubble() && ly < spriteTop;
+    hit = onSprite || onBubble;
+  }
+  if (hit !== cursorHit) {
+    cursorHit = hit;
+    petWin.setIgnoreMouseEvents(!hit, { forward: true });
+  }
+
+  if (!inside && !cursorInPet) return;
+  cursorInPet = inside;
+  petWin.webContents.send('pet:cursor', inside ? { x: c.x - b.x, y: c.y - b.y } : null);
+}
 
 ipcMain.on('pet:drag-start', () => {
   const c = screen.getCursorScreenPoint();
@@ -973,6 +1007,7 @@ if (!app.requestSingleInstanceLock()) {
   if (!isMac) {
     app.whenReady().then(() => {
       setInterval(keepOnTop, 2000);
+      setInterval(pollCursor, 50);
       powerMonitor.on('unlock-screen', keepOnTop);
       powerMonitor.on('resume', keepOnTop);
     });

@@ -363,6 +363,11 @@ document.addEventListener('mouseleave', () => {
   if (!dragging) setHover(false);
 });
 
+window.pet.onCursor((p) => {
+  if (dragging) return;
+  setHover(p ? hoverAt(p.x, p.y) : false);
+});
+
 canvas.addEventListener('mousedown', (e) => {
   if (e.button !== 0) return;
   dragging = true;
