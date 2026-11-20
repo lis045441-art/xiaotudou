@@ -365,7 +365,7 @@ function sendPinList() {
 }
 
 function ensurePinWin() {
-  if (pinWin && !pinWin.isDestroyed()) { pinWin.show(); return; }
+  if (pinWin && !pinWin.isDestroyed()) { pinWin.show(); raisePetAbovePin(); return; }
   const { width: sw } = screen.getPrimaryDisplay().workAreaSize;
   const w = 260, h = 300;
   pinWin = new BrowserWindow({
@@ -381,8 +381,13 @@ function ensurePinWin() {
     sendPinList();
     pinWin.webContents.send('pin:theme', sprite.theme);
   });
+  raisePetAbovePin();
   const win = pinWin;
   win.once('closed', () => { if (pinWin === win) pinWin = null; });
+}
+
+function raisePetAbovePin() {
+  if (petWin && !petWin.isDestroyed()) petWin.moveTop();
 }
 
 function pinNote(id) {
@@ -994,7 +999,7 @@ if (!app.requestSingleInstanceLock()) {
       panelWin.restore();
       hidePanel();
     }
-    for (const w of [petWin, pinWin, panelWin]) {
+    for (const w of [pinWin, petWin, panelWin]) {
       if (!w || w.isDestroyed()) continue;
       if (w.isMinimized()) w.restore();
       if (!w.isVisible()) continue;
