@@ -159,3 +159,22 @@ npm run dist:win   # Windows
 ## 自己做一只
 
 [TUTORIAL.md](TUTORIAL.md) 是用 AI 一步步做出这类桌宠的教程。
+
+图文版（10 张，点开看大图）：
+
+<p>
+  <a href="docs/xhs/01.png"><img src="docs/xhs/01.png" width="200"></a>
+  <a href="docs/xhs/02.png"><img src="docs/xhs/02.png" width="200"></a>
+  <a href="docs/xhs/03.png"><img src="docs/xhs/03.png" width="200"></a>
+  <a href="docs/xhs/04.png"><img src="docs/xhs/04.png" width="200"></a>
+</p>
+<p>
+  <a href="docs/xhs/05.png"><img src="docs/xhs/05.png" width="200"></a>
+  <a href="docs/xhs/06.png"><img src="docs/xhs/06.png" width="200"></a>
+  <a href="docs/xhs/07.png"><img src="docs/xhs/07.png" width="200"></a>
+  <a href="docs/xhs/08.png"><img src="docs/xhs/08.png" width="200"></a>
+</p>
+<p>
+  <a href="docs/xhs/09.png"><img src="docs/xhs/09.png" width="200"></a>
+  <a href="docs/xhs/10.png"><img src="docs/xhs/10.png" width="200"></a>
+</p>
