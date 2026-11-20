@@ -1,0 +1,14 @@
+{
+  "remindHours": [9, 21],
+  "snoozeMin": 10,
+  "items": [
+    { "id": "pour", "name": "倒水", "icon": "kettle" },
+    { "id": "drink", "name": "喝水", "icon": "cup", "goal": 8, "remindEvery": 45, "remindText": "该喝口水啦" },
+    { "id": "toilet", "name": "上厕所", "icon": "roll" },
+    { "id": "walk", "name": "走动", "icon": "steps", "goal": 4, "remindEvery": 90, "remindText": "起来走两步吧" },
+    { "id": "stand", "name": "站起来", "icon": "stretch", "goal": 6, "remindEvery": 60, "remindText": "站起来伸个懒腰" },
+    { "id": "chat", "name": "短暂吹水", "short": "吹水", "icon": "chat" },
+    { "id": "parcel", "name": "拿快递", "icon": "parcel" },
+    { "id": "711", "name": "去7仔买吃的", "short": "去7仔", "icon": "onigiri" }
+  ]
+}

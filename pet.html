@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' file:; img-src 'self' file: data:; style-src 'self' file: 'unsafe-inline'"
+    />
+    <link rel="stylesheet" href="pet.css" />
+    <link rel="stylesheet" href="icons.css" />
+  </head>
+  <body>
+    <div id="stage">
+      <div id="bubble" class="hit" hidden>
+        <div id="bubble-text"></div>
+        <div id="bubble-more" hidden></div>
+        <div class="bubble-actions" id="bubble-actions"></div>
+      </div>
+      <canvas id="sprite" class="hit"></canvas>
+    </div>
+    <script src="theme.js"></script>
+    <script src="icons.js"></script>
+    <script src="pet.js"></script>
+  </body>
+</html>

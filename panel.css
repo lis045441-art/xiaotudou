@@ -1,0 +1,425 @@
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: transparent;
+  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  color: var(--text);
+}
+
+body {
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--panel-bg);
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  box-shadow: 0 4px 0 var(--ink);
+  overflow: hidden;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border-bottom: 2px dashed var(--divider);
+  -webkit-app-region: drag;
+}
+
+header button {
+  -webkit-app-region: no-drag;
+  width: 26px;
+  height: 26px;
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+  background: #fff;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+#add {
+  background: var(--accent);
+}
+
+.scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 10px 24px;
+}
+
+#empty {
+  padding: 40px 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.card {
+  margin-bottom: 8px;
+  padding: 8px;
+  background: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.card textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+  resize: none;
+  overflow: hidden;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  color: inherit;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.meta label {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+}
+
+/* 时间框和它的清除键做成一体，避免 × 被看成"删除" */
+.remind-box {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  background: var(--input-bg);
+  min-width: 0;
+  flex-shrink: 1;
+  overflow: hidden;
+}
+
+.remind {
+  padding: 1px 4px;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+  color: inherit;
+  outline: none;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.meta .remind-box .clear {
+  padding: 0 5px 0 2px;
+  font-size: 13px;
+  line-height: 1;
+}
+
+/* 已完成的便签不会再提醒，不显示时间框 */
+#done-list .remind-box {
+  display: none;
+}
+
+.card.fired .remind {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.meta button {
+  padding: 1px 6px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.meta button:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.pin-btn {
+  font-size: 12px;
+  opacity: 0.5;
+  transition: opacity 0.15s;
+}
+
+.pin-btn:hover {
+  opacity: 1;
+}
+
+.pin-btn.pinned {
+  opacity: 1;
+}
+
+.del {
+  margin-left: auto;
+}
+
+details summary {
+  margin: 4px 0 8px;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+#done-list .card {
+  background: var(--done-bg);
+}
+
+#done-list textarea {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+header button {
+  color: var(--text);
+}
+
+.meta input[type='checkbox'] {
+  accent-color: var(--ink);
+}
+
+/* ---------- 标签页 ---------- */
+
+.tabs {
+  flex: 1;
+  display: flex;
+  gap: 4px;
+}
+
+header .tabs .tab {
+  -webkit-app-region: no-drag;
+  width: auto;
+  height: 26px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 13px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+header .tabs .tab.active {
+  background: var(--card-bg);
+  color: var(--text);
+}
+
+/* ---------- 打卡 ---------- */
+
+.ck-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.ck-btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 7px 2px 9px;
+  border: 1.5px solid var(--input-border);
+  border-radius: 10px;
+  background: var(--card-bg);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.08s;
+}
+
+.ck-btn:active {
+  transform: scale(0.94);
+}
+
+.ck-btn.bump {
+  animation: bump 0.35s;
+}
+
+@keyframes bump {
+  40% {
+    transform: scale(1.08);
+  }
+}
+
+.ck-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 2px;
+  border-radius: 50%;
+  background: var(--panel-bg);
+}
+
+.ck-icon .ic {
+  width: 34px;
+  height: 34px;
+}
+
+.ck-name {
+  font-size: 11px;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ck-count {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ck-btn.met .ck-count::after {
+  content: ' ✓';
+}
+
+.ck-bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 4px;
+  background: var(--accent);
+}
+
+.ck-undo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.ck-undo button {
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.ck-title {
+  margin: 14px 0 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.ck-week {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 3px;
+  font-size: 11px;
+}
+
+.ck-week th {
+  font-weight: normal;
+  color: var(--muted);
+}
+
+.ck-week th.today {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.ck-week td.label {
+  white-space: nowrap;
+  color: var(--text);
+}
+
+.ck-week td.cell {
+  width: 26px;
+  height: 20px;
+  border-radius: 4px;
+  text-align: center;
+  color: var(--text);
+  background: color-mix(in srgb, var(--accent) var(--lv, 0%), var(--input-bg));
+}
+
+.ck-undo[hidden] {
+  display: none;
+}
+
+/* ---------- 提醒设置 ---------- */
+
+.ck-settings {
+  margin-top: 14px;
+}
+
+.ck-settings summary {
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.ck-setting-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--divider);
+  font-size: 12px;
+}
+
+.ck-setting-row:last-child {
+  border-bottom: none;
+}
+
+.ck-setting-name {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ck-setting-name .ic {
+  width: 18px;
+  height: 18px;
+}
+
+.ck-setting-field {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.ck-setting-field input {
+  width: 42px;
+  padding: 2px 4px;
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  background: var(--input-bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  text-align: center;
+}
+
+.ck-setting-field .unit {
+  color: var(--muted);
+  font-size: 11px;
+}

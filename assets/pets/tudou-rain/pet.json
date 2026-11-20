@@ -1,0 +1,15 @@
+{
+  "name": "雨衣小土豆",
+  "size": 160,
+  "props": true,
+  "weather": ["rain"],
+  "images": {
+    "sleep": "sleep.png"
+  },
+  "theme": {
+    "ink": "#4a3726",
+    "panel": "#fffbe8",
+    "card": "#fff1b8",
+    "accent": "#f2b705"
+  }
+}

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' file:; style-src 'self' file: 'unsafe-inline'"
+    />
+    <link rel="stylesheet" href="panel.css" />
+    <link rel="stylesheet" href="icons.css" />
+  </head>
+  <body>
+    <div class="panel">
+      <header>
+        <nav class="tabs">
+          <button class="tab active" data-tab="notes">便利贴</button>
+          <button class="tab" data-tab="checkin">摸鱼打卡</button>
+        </nav>
+        <button id="add" title="新建">＋</button>
+        <button id="close" title="关闭 (Esc)">×</button>
+      </header>
+      <div class="scroll" id="view-notes">
+        <div id="empty" hidden>还没有便利贴，点 ＋ 新建</div>
+        <div id="list"></div>
+        <details id="done-wrap" hidden>
+          <summary>已完成 <span id="done-count"></span></summary>
+          <div id="done-list"></div>
+        </details>
+      </div>
+      <div class="scroll" id="view-checkin" hidden>
+        <div class="ck-grid" id="ck-grid"></div>
+        <div class="ck-undo" id="ck-undo" hidden>
+          <span id="ck-undo-text"></span>
+          <button id="ck-undo-btn">撤销</button>
+        </div>
+        <div class="ck-title">最近 7 天</div>
+        <table class="ck-week" id="ck-week"></table>
+        <details class="ck-settings">
+          <summary>提醒设置</summary>
+          <div id="ck-settings-list"></div>
+        </details>
+      </div>
+    </div>
+    <script src="theme.js"></script>
+    <script src="icons.js"></script>
+    <script src="panel.js"></script>
+  </body>
+</html>

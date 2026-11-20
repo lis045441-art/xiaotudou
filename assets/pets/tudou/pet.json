@@ -1,0 +1,14 @@
+{
+  "name": "小土豆",
+  "size": 160,
+  "props": true,
+  "images": {
+    "sleep": "sleep.png"
+  },
+  "theme": {
+    "ink": "#4a3726",
+    "panel": "#fff7ea",
+    "card": "#ffe9cf",
+    "accent": "#ff9a3c"
+  }
+}

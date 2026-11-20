@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' file:; style-src 'self' file: 'unsafe-inline'; script-src 'self' 'unsafe-inline'"
+    />
+    <style>
+      :root {
+        --ink: #4a3b2a;
+        --panel-bg: #fffdf6;
+        --card-bg: #fff3a8;
+        --accent: #ffd76a;
+        --muted: #a09080;
+        --divider: #e0d8c8;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { background: transparent; font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; height: 100%; }
+      .wrap {
+        background: var(--card-bg);
+        border: 1.5px solid var(--accent);
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .header {
+        display: flex;
+        align-items: center;
+        padding: 6px 10px;
+        border-bottom: 1px dashed var(--accent);
+        cursor: move;
+        -webkit-app-region: drag;
+      }
+      .header span { flex: 1; font-size: 12px; font-weight: 600; color: var(--muted); }
+      .header button {
+        -webkit-app-region: no-drag;
+        border: none; background: transparent; font-size: 14px; color: var(--muted); cursor: pointer; width: 20px; height: 20px;
+      }
+      .header button:hover { color: var(--ink); }
+      .list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 6px 8px;
+      }
+      .item {
+        padding: 6px 8px;
+        border-bottom: 1px solid var(--divider);
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+      }
+      .item:last-child { border-bottom: none; }
+      .item-text {
+        flex: 1;
+        font-size: 13px;
+        line-height: 1.5;
+        color: var(--ink);
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+      .item-time {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .item-unpin {
+        border: none;
+        background: transparent;
+        font-size: 11px;
+        color: var(--muted);
+        cursor: pointer;
+        padding: 0 2px;
+        flex-shrink: 0;
+        opacity: 0.6;
+      }
+      .item-unpin:hover { opacity: 1; }
+      .empty {
+        padding: 20px 0;
+        text-align: center;
+        font-size: 12px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="header">
+        <span>固定便利贴</span>
+        <button id="close" title="关闭窗口">×</button>
+      </div>
+      <div class="list" id="list"></div>
+    </div>
+    <script>
+      const { ipcRenderer } = require('electron');
+      const list = document.getElementById('list');
+      let pinnedNotes = [];
+
+      function hexToRgb(hex) {
+        const n = parseInt(hex.replace('#', ''), 16);
+        return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+      }
+      function mix(a, b, t) {
+        const x = hexToRgb(a), y = hexToRgb(b);
+        return '#' + x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, '0')).join('');
+      }
+      function applyTheme(theme) {
+        const t = { ink: '#4a3b2a', panel: '#fffdf6', card: '#fff3a8', accent: '#ffd76a', ...(theme || {}) };
+        const s = document.documentElement.style;
+        s.setProperty('--ink', t.ink);
+        s.setProperty('--panel-bg', t.panel);
+        s.setProperty('--card-bg', t.card);
+        s.setProperty('--accent', t.accent);
+        s.setProperty('--muted', mix(t.ink, t.panel, 0.35));
+        s.setProperty('--divider', mix(t.ink, t.panel, 0.8));
+      }
+      ipcRenderer.on('pin:theme', (_, theme) => applyTheme(theme));
+
+      function render() {
+        if (!pinnedNotes.length) {
+          list.innerHTML = '<div class="empty">没有固定的便利贴</div>';
+          return;
+        }
+        list.replaceChildren(...pinnedNotes.map(note => {
+          const item = document.createElement('div');
+          item.className = 'item';
+
+          const content = document.createElement('div');
+          content.style.flex = '1';
+          const text = document.createElement('div');
+          text.className = 'item-text';
+          text.textContent = note.text || '(空便利贴)';
+          content.appendChild(text);
+          if (note.remindAt) {
+            const time = document.createElement('div');
+            time.className = 'item-time';
+            time.textContent = note.remindAt.replace('T', ' ');
+            content.appendChild(time);
+          }
+
+          const btns = document.createElement('div');
+          btns.style.cssText = 'display:flex;flex-direction:column;gap:4px;flex-shrink:0';
+
+          const done = document.createElement('button');
+          done.className = 'item-unpin';
+          done.textContent = '完成';
+          done.title = '标记完成并取消固定';
+          done.style.color = '#4a9';
+          done.addEventListener('click', () => ipcRenderer.send('pin:done', note.id));
+
+          const unpin = document.createElement('button');
+          unpin.className = 'item-unpin';
+          unpin.textContent = '取消';
+          unpin.title = '取消固定';
+          unpin.addEventListener('click', () => ipcRenderer.send('pin:unpin', note.id));
+
+          if (note.done) {
+            text.style.textDecoration = 'line-through';
+            text.style.color = 'var(--muted)';
+            btns.append(unpin);
+          } else {
+            btns.append(done, unpin);
+          }
+          item.append(content, btns);
+          return item;
+        }));
+      }
+
+      ipcRenderer.on('pin:list', (_, notes) => {
+        pinnedNotes = notes;
+        render();
+      });
+
+      document.getElementById('close').addEventListener('click', () => {
+        ipcRenderer.send('pin:hide');
+      });
+    </script>
+  </body>
+</html>
