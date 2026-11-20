@@ -6,8 +6,8 @@
 
 到 [Releases](https://github.com/lis045441-art/xiaotudou/releases) 下载：
 
-- Mac（Apple 芯片）：`小土豆-<版本>-mac.dmg`，打开后把「小土豆」拖进「应用程序」。第一次打开提示「无法验证开发者」时，右键 App →「打开」，或去「系统设置 → 隐私与安全性」点「仍要打开」。
-- Windows：`小土豆-安装包-<版本>.exe`（安装版）或 `小土豆-免安装-<版本>.exe`（双击即用）。弹出 SmartScreen 蓝框时点「更多信息 → 仍要运行」。
+- Mac（Apple 芯片）：`xiaotudou-<版本>-mac.dmg`，打开后把「小土豆」拖进「应用程序」。第一次打开提示「无法验证开发者」时，右键 App →「打开」，或去「系统设置 → 隐私与安全性」点「仍要打开」。
+- Windows：`xiaotudou-setup-<版本>.exe`（安装版）或 `xiaotudou-portable-<版本>.exe`（双击即用）。弹出 SmartScreen 蓝框时点「更多信息 → 仍要运行」。
 
 ## 从源码运行
 
