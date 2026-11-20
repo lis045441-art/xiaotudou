@@ -822,7 +822,7 @@ ipcMain.on('pet:context-menu', () => {
       },
     },
     {
-      label: '下雨自动换成打伞的熊',
+      label: '下雨天自动切换雨天造型',
       type: 'checkbox',
       checked: settings.rainSwitch,
       click: (item) => {
