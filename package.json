@@ -23,7 +23,8 @@
     },
     "files": [
       "**/*",
-      "!TUTORIAL.md"
+      "!TUTORIAL.md",
+      "!docs/**"
     ],
     "mac": {
       "target": [{ "target": "dmg", "arch": ["arm64"] }],
