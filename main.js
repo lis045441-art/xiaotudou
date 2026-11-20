@@ -381,7 +381,7 @@ function ensurePinWin() {
     sendPinList();
     pinWin.webContents.send('pin:theme', sprite.theme);
   });
-  raisePetAbovePin();
+  pinWin.on('blur', raisePetAbovePin);
   const win = pinWin;
   win.once('closed', () => { if (pinWin === win) pinWin = null; });
 }
@@ -468,6 +468,7 @@ function needsAttention() {
 function sendBubble() {
   if (!petWin || petWin.isDestroyed()) return;
   petWin.webContents.send('pet:bubble', currentBubble());
+  if (currentBubble()) raisePetAbovePin();
 }
 
 // ---------- 摸鱼打卡 ----------
