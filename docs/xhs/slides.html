@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>桌宠教程轮播图</title>
+<style>
+  :root {
+    --bg: #fff7ea;
+    --ink: #4a3726;
+    --muted: #8a7461;
+    --accent: #ff9a3c;
+    --accent-soft: #ffe3c4;
+    --card: #ffffff;
+    --code-bg: #3b2f27;
+    --code-ink: #fff3e2;
+    --green: #7cbf6a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1440px; overflow: hidden; background: var(--bg); }
+  body {
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    color: var(--ink);
+  }
+  .slide { display: none; position: relative; width: 1080px; height: 1440px; padding: 90px 80px 120px; overflow: hidden; }
+  .slide.on { display: block; }
+  .slide::before {
+    content: ""; position: absolute; inset: 0;
+    background-image: radial-gradient(#f3e2c9 2.5px, transparent 2.5px);
+    background-size: 36px 36px; opacity: .7; z-index: 0;
+  }
+  .slide > * { position: relative; z-index: 1; }
+  .tag {
+    display: inline-block; background: var(--accent); color: #fff; font-weight: 700;
+    font-size: 30px; padding: 8px 26px; border-radius: 999px; margin-bottom: 26px;
+  }
+  h1 { font-size: 64px; line-height: 1.25; font-weight: 800; margin-bottom: 18px; }
+  h2 { font-size: 36px; font-weight: 800; margin: 34px 0 16px; }
+  .sub { font-size: 32px; color: var(--muted); line-height: 1.5; }
+  .hl { background: linear-gradient(transparent 58%, var(--accent-soft) 58%); }
+  pre {
+    background: var(--code-bg); color: var(--code-ink); border-radius: 28px;
+    padding: 34px 38px; font-family: "PingFang SC", "Menlo", sans-serif;
+    font-size: 26px; line-height: 1.6; white-space: pre-wrap; word-break: normal; overflow-wrap: anywhere;
+    position: relative;
+  }
+  pre::before {
+    content: "复制给 AI 👇"; position: absolute; top: -20px; right: 30px;
+    background: var(--accent); color: #fff; font-size: 22px; font-weight: 700;
+    padding: 4px 16px; border-radius: 999px;
+  }
+  pre.small { font-size: 23px; padding: 30px 34px; }
+  .check {
+    background: var(--card); border: 4px solid var(--ink); border-radius: 26px;
+    padding: 26px 32px; margin-top: 30px; font-size: 27px; line-height: 1.65;
+  }
+  .check b { color: var(--accent); }
+  .check li { list-style: none; padding-left: 40px; position: relative; }
+  .check li::before { content: "✓"; position: absolute; left: 0; color: var(--green); font-weight: 900; }
+  .foot {
+    position: absolute; left: 80px; right: 80px; bottom: 50px; display: flex;
+    justify-content: space-between; align-items: center; font-size: 24px; color: var(--muted);
+  }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 40px; }
+  .tile {
+    background: var(--card); border: 4px solid var(--ink); border-radius: 30px;
+    padding: 26px 22px 24px; text-align: center; box-shadow: 8px 8px 0 var(--accent-soft);
+  }
+  .tile svg { height: 170px; }
+  .tile .t { font-size: 32px; font-weight: 800; margin-top: 10px; }
+  .tile .d { font-size: 24px; color: var(--muted); margin-top: 6px; line-height: 1.45; }
+  .rows { margin-top: 36px; display: flex; flex-direction: column; gap: 24px; }
+  .row {
+    display: flex; gap: 26px; align-items: flex-start; background: var(--card);
+    border: 4px solid var(--ink); border-radius: 28px; padding: 28px 30px;
+  }
+  .row .n {
+    flex: none; width: 66px; height: 66px; border-radius: 50%; background: var(--accent);
+    color: #fff; font-size: 34px; font-weight: 800; display: flex; align-items: center; justify-content: center;
+  }
+  .row .t { font-size: 32px; font-weight: 800; margin-bottom: 6px; }
+  .row .d { font-size: 26px; line-height: 1.55; color: var(--ink); }
+  code { background: var(--accent-soft); border-radius: 8px; padding: 1px 8px; font-family: "Menlo", monospace; font-size: .92em; }
+  .note { font-size: 25px; color: var(--muted); line-height: 1.6; margin-top: 22px; }
+
+  /* 封面 */
+  .desk {
+    margin-top: 50px; height: 700px; border: 5px solid var(--ink); border-radius: 34px;
+    background: linear-gradient(#cfe8ff, #eaf5ff); position: relative; overflow: hidden;
+  }
+  .desk .win {
+    position: absolute; left: 60px; top: 60px; width: 520px; height: 330px; background: #fff;
+    border: 4px solid var(--ink); border-radius: 18px;
+  }
+  .desk .win::before {
+    content: "● ● ●"; display: block; font-size: 18px; letter-spacing: 4px; color: #e7b38a;
+    padding: 10px 18px; border-bottom: 3px solid #eadfd3;
+  }
+  .desk .line { height: 16px; background: #efe6dc; border-radius: 8px; margin: 22px 30px 0; }
+  .desk .bar { position: absolute; left: 0; right: 0; bottom: 0; height: 80px; background: rgba(74,55,38,.85); }
+  .desk .sticky {
+    position: absolute; right: 60px; top: 70px; width: 300px; background: #fff3a8;
+    border: 4px solid var(--ink); border-radius: 14px; padding: 22px; font-size: 26px; line-height: 1.6;
+    transform: rotate(3deg); box-shadow: 6px 6px 0 rgba(74,55,38,.15);
+  }
+  .desk .pet { position: absolute; bottom: 80px; left: 360px; }
+  .desk .bubble {
+    position: absolute; bottom: 330px; left: 330px; background: #fff; border: 4px solid var(--ink);
+    border-radius: 22px; padding: 14px 24px; font-size: 30px; font-weight: 800;
+  }
+  .desk .bubble::after {
+    content: ""; position: absolute; left: 90px; bottom: -18px; width: 26px; height: 26px; background: #fff;
+    border-right: 4px solid var(--ink); border-bottom: 4px solid var(--ink); transform: rotate(45deg);
+  }
+  .desk .trail { position: absolute; bottom: 92px; left: 220px; font-size: 30px; color: var(--muted); letter-spacing: 8px; }
+  .pills { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 40px; }
+  .pill { background: var(--card); border: 4px solid var(--ink); border-radius: 999px; padding: 10px 28px; font-size: 30px; font-weight: 700; }
+  .poses { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 6px 0 40px; text-align: center; }
+  .poses > div { background: var(--card); border: 4px solid var(--ink); border-radius: 24px; padding: 14px 6px 12px; }
+  .poses svg { height: 130px; }
+  .poses span { display: block; font-size: 24px; font-weight: 800; margin-top: 6px; }
+  .end { text-align: center; margin-top: 30px; }
+  .end .big { font-size: 46px; font-weight: 800; margin-top: 16px; }
+</style>
+</head>
+<body>
+
+<!-- 1 封面 -->
+<section class="slide" data-p="1">
+  <div class="tag">零基础 · AI 编程</div>
+  <h1>不会写代码<br>我让 AI 做了只<span class="hl">会走路的桌宠</span></h1>
+  <p class="sub">在屏幕底部晃来晃去，到点提醒我喝水 🥤</p>
+  <div class="desk">
+    <div class="win"><div class="line"></div><div class="line" style="width:60%"></div><div class="line" style="width:75%"></div><div class="line" style="width:40%"></div></div>
+    <div class="sticky">📌 15:00 周会<br>📌 记得喝水<br>📌 下班取快递</div>
+    <div class="trail">· · · ·</div>
+    <div class="bubble">该喝水啦！</div>
+    <div class="pet" data-blob="sign" data-size="250"></div>
+    <div class="bar"></div>
+  </div>
+  <div class="pills"><span class="pill">4 轮提示词</span><span class="pill">Mac / Win 都能用</span><span class="pill">能打包送朋友</span></div>
+</section>
+
+<!-- 2 它能干嘛 -->
+<section class="slide" data-p="2">
+  <div class="tag">先看效果</div>
+  <h1>它能干嘛？</h1>
+  <div class="grid">
+    <div class="tile"><div data-blob="walk"></div><div class="t">屏幕底部散步</div><div class="d">走到边缘自己掉头<br>不挡你点别的窗口</div></div>
+    <div class="tile"><div data-blob="sleep"></div><div class="t">没人理就睡觉</div><div class="d">5 分钟不碰电脑就睡<br>你一动它就醒</div></div>
+    <div class="tile"><div data-blob="drag"></div><div class="t">拎起来扔下去</div><div class="d">按住拖走<br>松手啪嗒掉回地面</div></div>
+    <div class="tile"><div data-blob="sign"></div><div class="t">到点举牌提醒</div><div class="d">点它弹出便利贴<br>到时间头顶冒气泡</div></div>
+  </div>
+  <p class="note" style="text-align:center;margin-top:34px">还能加：喝水 / 起身打卡、开机自启、打包成安装包</p>
+</section>
+
+<!-- 3 准备 -->
+<section class="slide" data-p="3">
+  <div class="tag">STEP 0</div>
+  <h1>要准备什么</h1>
+  <div class="rows">
+    <div class="row"><div class="n">1</div><div><div class="t">Node.js</div><div class="d">官网 nodejs.org 装 LTS 版<br>终端输入 <code>node -v</code> 能出版本号就行</div></div></div>
+    <div class="row"><div class="n">2</div><div><div class="t">一个能改文件的 AI 编程工具</div><div class="d">Claude Code、Cursor、Codex 都行<br>网页聊天版也能做，但要自己复制粘贴，累</div></div></div>
+    <div class="row"><div class="n">3</div><div><div class="t">一张角色图</div><div class="d">透明背景 PNG，边长 300–800px<br>角色占满画面，脚下别留空白<br>没有就先用 AI 生成一个<b>原创</b>形象</div></div></div>
+    <div class="row"><div class="n">4</div><div><div class="t">一个空文件夹</div><div class="d">比如 <code>my-pet/</code>，AI 就在里面干活</div></div></div>
+  </div>
+  <p class="note">⚙️ 技术直接定 <b>Electron</b>（用网页技术写桌面软件的框架），不用让 AI 自己挑：透明窗口、置顶、打包它都现成支持。</p>
+</section>
+
+<!-- 4 第一次用先看 -->
+<section class="slide" data-p="4">
+  <div class="tag">新手必看</div>
+  <h1>第一次用先看这几条</h1>
+  <div class="rows">
+    <div class="row"><div class="n">🚀</div><div><div class="t">怎么开始</div><div class="d">角色图改名 <code>pet.png</code> 放进 <code>my-pet/assets/</code><br>Cursor：文件 → 打开文件夹<br>Claude Code：打开终端，<code>cd</code> 进文件夹，输入 <code>claude</code></div></div></div>
+    <div class="row"><div class="n">🙈</div><div><div class="t">提示词看不懂没关系</div><div class="d">英文术语是写给 AI 看的，原样复制就行</div></div></div>
+    <div class="row"><div class="n">🆘</div><div><div class="t">出错了</div><div class="d">把报错原文整段贴给 AI，说清你刚做了什么<br>别只说「不行」</div></div></div>
+    <div class="row"><div class="n">🐢</div><div><div class="t">npm install 卡住 / 下载超时</div><div class="d">跟 AI 说「用国内镜像重新安装 Electron」</div></div></div>
+    <div class="row"><div class="n">👋</div><div><div class="t">怎么关掉桌宠</div><div class="d">右键桌宠 →「退出」<br>还没做右键菜单时，在终端按 <code>Ctrl+C</code></div></div></div>
+  </div>
+</section>
+
+<!-- 5 第一轮 -->
+<section class="slide" data-p="5">
+  <div class="tag">第 1 轮</div>
+  <h1>让角色站上桌面</h1>
+  <pre>用 Electron 在当前文件夹做一个桌宠程序，先只做最基础的部分：
+
+1. 一个透明、无边框、始终置顶、不在任务栏/Dock 显示的小窗口，里面显示 assets/pet.png。
+2. 窗口贴在屏幕底部（用 screen.getPrimaryDisplay().workArea，不要压住 Dock/任务栏）。
+3. 角色在屏幕底部左右来回走，走到边缘掉头；往左走时图片水平镜像。偶尔停下站一会儿再走。
+4. 窗口透明的地方鼠标要能点穿到下面的软件：默认 setIgnoreMouseEvents(true, { forward: true })，鼠标移到角色不透明的像素上时才改成 false（在页面里用 canvas 取像素 alpha 判断）。
+5. 主进程和页面之间用 preload.js + contextBridge 通信，不要开 nodeIntegration。
+6. package.json 里加 "start": "electron ."。
+
+做完告诉我怎么运行。</pre>
+  <ul class="check">
+    <b>验收</b>
+    <li><code>npm install</code> → <code>npm start</code>，角色在屏幕底部走</li>
+    <li>点角色旁边透明处，能点到后面的窗口（最容易出问题）</li>
+    <li>切到别的软件，角色还在最上面</li>
+  </ul>
+</section>
+
+<!-- 6 第二轮 -->
+<section class="slide" data-p="6">
+  <div class="tag">第 2 轮</div>
+  <h1>能拖、能点、能右键</h1>
+  <pre>给桌宠加交互：
+
+1. 按住角色可以拖动，松手后角色从当前位置掉回屏幕底部（简单的重力下落动画）。
+   拖动的位置计算放在主进程，用 screen.getCursorScreenPoint()，不要用页面里的 mouse 坐标算窗口位置。
+2. 单击（按下到松开移动不到 4 像素）算点击，不算拖动。点击先打印一行日志，下一轮接面板。
+3. 右键角色弹出原生菜单：安静模式（不走动，勾选项）、退出。
+4. 只允许运行一个实例（app.requestSingleInstanceLock）。</pre>
+  <ul class="check">
+    <b>验收</b>
+    <li>拖得动，松手会掉回地面</li>
+    <li>点一下不会误触发拖动</li>
+    <li>右键菜单能退出</li>
+    <li>再双击启动一次，不会出现两只</li>
+  </ul>
+  <div style="text-align:center;margin-top:40px" data-blob="drag" data-size="200"></div>
+</section>
+
+<!-- 7 第三轮 -->
+<section class="slide" data-p="7">
+  <div class="tag">第 3 轮</div>
+  <h1>一张图也能动起来</h1>
+  <pre class="small">把角色显示改成 canvas 绘制，支持这几个动作状态：idle（待机）、walk（走路）、sleep（睡觉）、remind（提醒）、drag（被拎起）。
+目前只有一张 pet.png，用变换模拟动作：
+- idle：轻微上下呼吸（纵向缩放 ±2.5%，横向反向补偿）
+- walk：一颠一颠 + 左右轻微摇摆
+- sleep：歪头、慢呼吸，头顶飘 z
+- remind：原地蹦跳 + 快速抖动
+- drag：以头顶为支点左右摆
+缩放和摇摆以脚底中心为支点，脚不离地。
+
+再加"电脑闲置 5 分钟就睡觉，一动就醒"：主进程用 powerMonitor.getSystemIdleTime() 判断。</pre>
+  <h2>想更自然？升级序列帧</h2>
+  <pre class="small">支持序列帧素材：assets/ 下如果有 idle/、walk/、sleep/、remind/、drag/ 子目录，就按文件名数字顺序逐帧播放，优先于单图。缺哪个动作就用 idle 代替。</pre>
+  <ul class="check">
+    <b>素材小建议</b>
+    <li>所有帧朝同一个方向画，程序会自动镜像</li>
+    <li>每个动作 2–8 帧就够</li>
+    <li>图片底边贴着脚底，不然会悬空</li>
+  </ul>
+</section>
+
+<!-- 8 第三轮进阶：道具 + 换图 -->
+<section class="slide" data-p="8">
+  <div class="tag">第 3 轮 · 进阶</div>
+  <h1>加道具，一张图也能很生动</h1>
+  <div class="poses">
+    <div><div data-blob="sign" data-size="150"></div><span>提醒举牌</span></div>
+    <div><div data-blob="drag" data-size="150"></div><span>拎起挂环</span></div>
+    <div><div data-blob="walk" data-size="150"></div><span>走路速度线</span></div>
+    <div><div data-blob="sleep" data-size="150"></div><span>睡觉闭眼</span></div>
+  </div>
+  <pre class="small">单图模式再加两样，都由 assets/pet.json 控制（没有这个文件就都不开）：
+
+1. 道具层（pet.json 里 "props": true 才画）：
+   - remind：角色身侧举一块黄色「!」牌，牌子跟着身体一起蹦跳
+   - drag：头顶画一段竖直虚线 + 一个小挂环，挂环不动，身体照常以头顶为支点摆
+   - walk：身后画 2–3 道速度线，往哪边走就画在另一边
+   开了道具时角色画小一点（约画布的 62%），给头顶的牌子和挂环留位置，牌子不能超出画布。
+2. 按动作换图：pet.json 里写 "images": { "sleep": "sleep.png" }，该动作就换这张图，呼吸、歪头、蹦跳这些程序动画照常；没写的动作继续用 pet.png。</pre>
+  <ul class="check">
+    <b>闭眼图怎么画</b>
+    <li>照着 pet.png 再画一张闭眼的 sleep.png</li>
+    <li>画布尺寸、角色位置和大小完全一样，只改眼睛和嘴</li>
+    <li>不然切换动作时角色会跳一下、忽大忽小</li>
+  </ul>
+</section>
+
+<!-- 9 第四轮 -->
+<section class="slide" data-p="9">
+  <div class="tag">第 4 轮 · 选做</div>
+  <h1>便利贴 + 喝水打卡</h1>
+  <h2 style="margin-top:20px">📝 便利贴 + 到点提醒</h2>
+  <pre class="small">单击桌宠时，在角色正上方弹出一个便利贴面板（另一个透明无边框置顶窗口，不要超出屏幕边缘）：
+- 可以新增、编辑、删除便利贴，自动保存到 userData 下的 notes.json
+- 每条可以设提醒时间；到点后桌宠切到 remind 动作，头顶出气泡显示内容，气泡上有"知道了"和"10 分钟后"两个按钮，同时发一条系统通知（Notification）
+- 按 Esc 或点面板外面收起面板
+- 关掉面板时空白的便利贴自动清掉</pre>
+  <h2>🥤 喝水 / 起身打卡</h2>
+  <pre class="small">加一个"打卡"功能，项目从 checkins.json 读（喝水、站起来、走动，每项可配每日目标次数和提醒间隔分钟数）：
+- 面板里加一个"打卡"标签页，点按钮打卡，显示今天次数、目标进度、最近 7 天表格
+- 打卡后桌宠头顶冒 +1，4 秒内可撤销
+- 定时提醒只计用户在用电脑的时间（闲置超过 5 分钟暂停计时），只在 9:00–21:00 提醒
+- 记录存在 userData，保留最近 60 天</pre>
+  <p class="note">每个功能单独一轮，做完一个验收一个，别一次全丢给 AI。</p>
+</section>
+
+<!-- 10 打包 -->
+<section class="slide" data-p="10">
+  <div class="tag">第 5 步</div>
+  <h1>打包送给朋友 🎁</h1>
+  <pre class="small">用 electron-builder 配置打包：
+- Mac：dmg，Apple 芯片（arm64）
+- Windows：nsis 安装包 + portable 免安装版，x64
+- 图标用 build/icon.png（1024×1024）
+- 打包后用固定的数据目录名（app.setPath('userData', ...)），不要随 productName 变
+- 右键菜单加"开机自动启动"（app.setLoginItemSettings），只在打包后的版本显示
+加上 npm run dist（Mac）和 npm run dist:win。</pre>
+  <ul class="check">
+    <b>朋友第一次打开</b>
+    <li>Mac 提示「无法验证开发者」：右键 App →「打开」</li>
+    <li>Windows 弹蓝框：点「更多信息 → 仍要运行」</li>
+    <li>Mac 安装包要在 Mac 上打，Windows 版最好在 Windows 上打</li>
+  </ul>
+  <div class="end">
+    <div data-blob="wave" data-size="200"></div>
+    <div class="big">做完记得给它起个名字～</div>
+    <p class="note">角色请用自己画的或 AI 生成的原创形象，别直接用现成的动漫角色</p>
+  </div>
+</section>
+
+<script>
+  // 原创小团子：橘色圆团 + 豆豆眼 + 头顶小芽
+  function blob(pose, size) {
+    const ink = '#4a3726';
+    const eyes = pose === 'sleep'
+      ? `<path d="M78 112 q10 8 20 0 M122 112 q10 8 20 0" stroke="${ink}" stroke-width="5" fill="none" stroke-linecap="round"/>`
+      : `<ellipse cx="88" cy="110" rx="7" ry="9" fill="${ink}"/><ellipse cx="132" cy="110" rx="7" ry="9" fill="${ink}"/>
+         <circle cx="90" cy="106" r="2.5" fill="#fff"/><circle cx="134" cy="106" r="2.5" fill="#fff"/>`;
+    const mouth = pose === 'sleep'
+      ? `<ellipse cx="110" cy="132" rx="5" ry="4" fill="${ink}"/>`
+      : `<path d="M102 128 q8 8 16 0" stroke="${ink}" stroke-width="4.5" fill="none" stroke-linecap="round"/>`;
+    const body = `
+      <path d="M110 36 q-4 -16 -18 -20 q12 0 18 14 q6 -14 18 -14 q-14 4 -18 20" fill="#7cbf6a" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/>
+      <ellipse cx="88" cy="186" rx="16" ry="9" fill="#e9843a" stroke="${ink}" stroke-width="4"/>
+      <ellipse cx="132" cy="186" rx="16" ry="9" fill="#e9843a" stroke="${ink}" stroke-width="4"/>
+      <path d="M110 34 C 168 34 190 80 190 128 C 190 168 158 186 110 186 C 62 186 30 168 30 128 C 30 80 52 34 110 34 Z" fill="#ffb066" stroke="${ink}" stroke-width="5"/>
+      <ellipse cx="72" cy="126" rx="12" ry="7" fill="#ff8a8a" opacity=".55"/>
+      <ellipse cx="148" cy="126" rx="12" ry="7" fill="#ff8a8a" opacity=".55"/>
+      ${eyes}${mouth}`;
+    let extra = '', wrap = body, vb = '0 0 220 210';
+    if (pose === 'sleep') {
+      extra = `<text x="168" y="40" font-size="30" font-weight="800" fill="${ink}" font-family="sans-serif">z</text>
+               <text x="190" y="18" font-size="22" font-weight="800" fill="${ink}" font-family="sans-serif">z</text>`;
+      wrap = `<g transform="rotate(-8 110 186)">${body}</g>`;
+    } else if (pose === 'walk') {
+      wrap = `<g transform="rotate(6 110 186) translate(0 -8)">${body}</g>`;
+      extra = `<path d="M8 180 h16 M0 160 h20 M10 140 h14" stroke="#c9b49c" stroke-width="5" stroke-linecap="round"/>`;
+    } else if (pose === 'drag') {
+      vb = '0 -30 220 240';
+      wrap = `<g transform="rotate(12 110 30)">${body}</g>`;
+      extra = `<path d="M110 30 L110 -26" stroke="${ink}" stroke-width="5" stroke-dasharray="6 6"/>
+               <circle cx="110" cy="-26" r="10" fill="#fff" stroke="${ink}" stroke-width="4"/>`;
+    } else if (pose === 'sign') {
+      vb = '0 -20 260 230';
+      extra = `<line x1="196" y1="150" x2="222" y2="34" stroke="${ink}" stroke-width="6" stroke-linecap="round"/>
+               <rect x="186" y="-14" width="70" height="56" rx="10" fill="#fff3a8" stroke="${ink}" stroke-width="5"/>
+               <text x="221" y="24" text-anchor="middle" font-size="30" font-weight="800" fill="${ink}" font-family="sans-serif">!</text>
+               <ellipse cx="190" cy="152" rx="13" ry="11" fill="#ffb066" stroke="${ink}" stroke-width="4"/>`;
+    } else if (pose === 'wave') {
+      extra = `<ellipse cx="196" cy="88" rx="13" ry="11" fill="#ffb066" stroke="${ink}" stroke-width="4"/>
+               <path d="M206 62 q10 -6 12 -18 M214 76 q12 -2 18 -12" stroke="${ink}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+      vb = '0 0 240 210';
+    }
+    return `<svg viewBox="${vb}" style="height:${size}px" xmlns="http://www.w3.org/2000/svg">${wrap}${extra}</svg>`;
+  }
+  document.querySelectorAll('[data-blob]').forEach((el) => {
+    el.innerHTML = blob(el.dataset.blob, +el.dataset.size || 170);
+  });
+  const p = new URLSearchParams(location.search).get('p') || '1';
+  const total = document.querySelectorAll('.slide').length;
+  document.querySelectorAll('.slide').forEach((s) => {
+    const n = s.dataset.p;
+    s.insertAdjacentHTML('beforeend', `<div class="foot"><span>用 AI 做一只自己的桌宠</span><span>${n} / ${total}</span></div>`);
+    if (n === p) s.classList.add('on');
+  });
+</script>
+</body>
+</html>
